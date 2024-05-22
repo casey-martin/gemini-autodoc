@@ -1,0 +1,110 @@
+ESearch
+Base URL
+https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi
+
+Functions
+Provides a list of UIDs matching a text query
+Posts the results of a search on the History server
+Downloads all UIDs from a dataset stored on the History server
+Combines or limits UID datasets stored on the History server
+Sorts sets of UIDs
+API users should be aware that some NCBI products contain search tools that generate content from searches on the web interface that are not available to ESearch. For example, the PubMed web interface (pubmed.ncbi.nlm.nih.gov) contains citation matching and spelling correction tools that are only available through that interface. Please see ECitMatch and ESpell below for API equivalents.
+
+Required Parameters
+db
+Database to search. Value must be a valid Entrez database name (default = pubmed).
+
+term
+Entrez text query. All special characters must be URL encoded. Spaces may be replaced by '+' signs. For very long queries (more than several hundred characters long), consider using an HTTP POST call. See the PubMed or Entrez help for information about search field descriptions and tags. Search fields and tags are database specific.
+
+esearch.fcgi?db=pubmed&term=asthma
+PubMed also offers “proximity searching” for multiple terms appearing in any order within a specified number of words from one another in the [Title] or [Title/Abstract] fields.
+
+esearch.fcgi?db=pubmed&term=”asthma treatment”[Title:~3]
+Optional Parameters – History Server
+usehistory
+When usehistory is set to 'y', ESearch will post the UIDs resulting from the search operation onto the History server so that they can be used directly in a subsequent E-utility call. Also, usehistory must be set to 'y' for ESearch to interpret query key values included in term or to accept a WebEnv as input.
+
+WebEnv
+Web environment string returned from a previous ESearch, EPost or ELink call. When provided, ESearch will post the results of the search operation to this pre-existing WebEnv, thereby appending the results to the existing environment. In addition, providing WebEnv allows query keys to be used in term so that previous search sets can be combined or limited. As described above, if WebEnv is used, usehistory must be set to 'y'.
+
+esearch.fcgi?db=pubmed&term=asthma&WebEnv=<webenv string>&usehistory=y
+query_key
+Integer query key returned by a previous ESearch, EPost or ELink call. When provided, ESearch will find the intersection of the set specified by query_key and the set retrieved by the query in term (i.e. joins the two with AND). For query_key to function, WebEnv must be assigned an existing WebEnv string and usehistory must be set to 'y'.
+
+Values for query keys may also be provided in term if they are preceeded by a '#' (%23 in the URL). While only one query_key parameter can be provided to ESearch, any number of query keys can be combined in term. Also, if query keys are provided in term, they can be combined with OR or NOT in addition to AND.
+
+The following two URLs are functionally equivalent:
+
+esearch.fcgi?db=pubmed&term=asthma&query_key=1&WebEnv=
+<webenv string>&usehistory=y
+
+esearch.fcgi?db=pubmed&term=%231+AND+asthma&WebEnv=
+<webenv string>&usehistory=y
+Optional Parameters – Retrieval
+retstart
+Sequential index of the first UID in the retrieved set to be shown in the XML output (default=0, corresponding to the first record of the entire set). This parameter can be used in conjunction with retmax to download an arbitrary subset of UIDs retrieved from a search.
+
+retmax
+Total number of UIDs from the retrieved set to be shown in the XML output (default=20). By default, ESearch only includes the first 20 UIDs retrieved in the XML output. If usehistory is set to 'y', the remainder of the retrieved set will be stored on the History server; otherwise these UIDs are lost. Increasing retmax allows more of the retrieved UIDs to be included in the XML output, up to a maximum of 10,000 records.
+
+To retrieve more than 10,000 UIDs from databases other than PubMed, submit multiple esearch requests while incrementing the value of retstart (see Application 3). For PubMed, ESearch can only retrieve the first 10,000 records matching the query. To obtain more than 10,000 PubMed records, consider using <EDirect> that contains additional logic to batch PubMed search results automatically so that an arbitrary number can be retrieved.
+
+rettype
+Retrieval type. There are two allowed values for ESearch: 'uilist' (default), which displays the standard XML output, and 'count', which displays only the <Count> tag.
+
+retmode
+Retrieval type. Determines the format of the returned output. The default value is ‘xml’ for ESearch XML, but ‘json’ is also supported to return output in JSON format.
+
+sort
+Specifies the method used to sort UIDs in the ESearch output. The available values vary by database (db) and may be found in the Display Settings menu on an Entrez search results page. If usehistory is set to ‘y’, the UIDs are loaded onto the History Server in the specified sort order and will be retrieved in that order by ESummary or EFetch. Example values are ‘relevance’ and ‘name’ for Gene. Users should be aware that the default value of sort varies from one database to another, and that the default value used by ESearch for a given database may differ from that used on NCBI web search pages.
+
+Values of sort for PubMed are as follows:
+
+pub_date – descending sort by publication date
+Author – ascending sort by first author
+JournalName – ascending sort by journal name
+relevance – default sort order, (“Best Match”) on web PubMed
+field
+Search field. If used, the entire search term will be limited to the specified Entrez field. The following two URLs are equivalent:
+
+esearch.fcgi?db=pubmed&term=asthma&field=title
+
+esearch.fcgi?db=pubmed&term=asthma[title]
+idtype
+Specifies the type of identifier to return for sequence databases (nuccore, popset, protein). By default, ESearch returns GI numbers in its output. If idtype is set to ‘acc’, ESearch will return accession.version identifiers rather than GI numbers.
+
+Optional Parameters – Dates
+datetype
+Type of date used to limit a search. The allowed values vary between Entrez databases, but common values are 'mdat' (modification date), 'pdat' (publication date) and 'edat' (Entrez date). Generally an Entrez database will have only two allowed values for datetype.
+
+reldate
+When reldate is set to an integer n, the search returns only those items that have a date specified by datetype within the last n days.
+
+mindate, maxdate
+Date range used to limit a search result by the date specified by datetype. These two parameters (mindate, maxdate) must be used together to specify an arbitrary date range. The general date format is YYYY/MM/DD, and these variants are also allowed: YYYY, YYYY/MM.
+
+Examples
+Search in PubMed with the term cancer for abstracts that have an Entrez date within the last 60 days; retrieve the first 100 PMIDs and translations; post the results on the History server and return a WebEnv and query_key:
+
+https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pubmed&term=cancer&reldate=60&datetype=edat&retmax=100&usehistory=y
+
+Search in PubMed for the journal PNAS, Volume 97, and retrieve six PMIDs starting with the seventh PMID in the list:
+
+https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pubmed&term=PNAS[ta]+AND+97[vi]&retstart=6&retmax=6&tool=biomed3
+
+Search in the NLM Catalog for journals matching the term obstetrics:
+
+https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=nlmcatalog&term=obstetrics+AND+ncbijournals[filter]
+
+Search PubMed Central for free full text articles containing the query stem cells:
+
+https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=pmc&term=stem+cells+AND+free+fulltext[filter]
+
+Search in Nucleotide for all tRNAs:
+
+https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=nucleotide&term=biomol+trna[prop]
+
+Search in Protein for a molecular weight range:
+
+https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi?db=protein&term=70000:90000[molecular+weight]

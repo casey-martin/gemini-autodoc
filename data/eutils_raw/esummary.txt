@@ -1,0 +1,68 @@
+ESummary
+Base URL
+https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi
+
+Functions
+Returns document summaries (DocSums) for a list of input UIDs
+Returns DocSums for a set of UIDs stored on the Entrez History server
+Required Parameter
+db
+Database from which to retrieve DocSums. The value must be a valid Entrez database name (default = pubmed).
+
+Required Parameter – Used only when input is from a UID list
+id
+UID list. Either a single UID or a comma-delimited list of UIDs may be provided. All of the UIDs must be from the database specified by db. There is no set maximum for the number of UIDs that can be passed to ESummary, but if more than about 200 UIDs are to be provided, the request should be made using the HTTP POST method.
+
+For sequence databases (nuccore, popset, protein), the UID list may be a mixed list of GI numbers and accession.version identifiers.
+
+esummary.fcgi?db=pubmed&id=19393038,30242208,29453458
+esummary.fcgi?db=protein&id=15718680,NP_001098858.1,119703751
+Required Parameters – Used only when input is from the Entrez History server
+query_key
+Query key. This integer specifies which of the UID lists attached to the given Web Environment will be used as input to ESummary. Query keys are obtained from the output of previous ESearch, EPost or ELink calls. The query_key parameter must be used in conjunction with WebEnv.
+
+WebEnv
+Web Environment. This parameter specifies the Web Environment that contains the UID list to be provided as input to ESummary. Usually this WebEnv value is obtained from the output of a previous ESearch, EPost or ELink call. The WebEnv parameter must be used in conjunction with query_key.
+
+esummary.fcgi?db=protein&query_key=<key>&WebEnv=<webenv string>
+Optional Parameters – Retrieval
+retstart
+Sequential index of the first DocSum to be retrieved (default=1, corresponding to the first record of the entire set). This parameter can be used in conjunction with retmax to download an arbitrary subset of DocSums from the input set.
+
+retmax
+Total number of DocSums from the input set to be retrieved, up to a maximum of 10,000. If the total set is larger than this maximum, the value of retstart can be iterated while holding retmax constant, thereby downloading the entire set in batches of size retmax.
+
+retmode
+Retrieval type. Determines the format of the returned output. The default value is ‘xml’ for ESummary XML, but ‘json’ is also supported to return output in JSON format.
+
+version
+Used to specify version 2.0 ESummary XML. The only supported value is ‘2.0’. When present, ESummary will return version 2.0 DocSum XML that is unique to each Entrez database and that often contains more data than the default DocSum XML.
+
+Examples
+PubMed:
+
+https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=pubmed&id=11850928,11482001
+
+PubMed, version 2.0 XML:
+
+https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=pubmed&id=11850928,11482001&version=2.0
+
+Protein:
+
+https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=protein&id=28800982,28628843
+
+Nucleotide:
+
+https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=nucleotide&id=28864546,28800981
+
+Structure:
+
+https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=structure&id=19923,12120
+
+Taxonomy:
+
+https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=taxonomy&id=9913,30521
+
+UniSTS:
+
+https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=unists&id=254085,254086
