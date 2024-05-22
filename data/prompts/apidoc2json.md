@@ -15,7 +15,7 @@ You will be given some unstructured documentation for an API. Your task is to st
 | env_requirements | List[String] | List of all the library dependencies |
 | example_code | String | A string containing example code to use the API |
 | meta_data | JSON | A JSON file of containing additional information about the API |
-| Questions | List[String] | Pretend you are a domain expert trying to solve a technical problem. Generate tasks, questions, and instructions (anywhere from 4 to 7) that would be resolved the returned values from this API. This set of diversely worded tasks (some issued as instructions, others as questions) should cover the API's parameter space. **DO NOT MENTION ANY API NAMES.** |
+| Questions | List[String] | Pretend you are a domain expert trying to solve a technical problem. Generate tasks, questions, and instructions (anywhere from 3 to 5) that would be resolved the returned values from this API. This set of diversely worded tasks (some issued as instructions, others as questions) should cover the API's parameter space. **DO NOT MENTION ANY API NAMES.** |
 
 **Example Documentation**
 Kubernetes Read Pod

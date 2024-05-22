@@ -1,0 +1,12 @@
+EGQuery
+Base URL
+https://eutils.ncbi.nlm.nih.gov/entrez/eutils/egquery.fcgi
+
+Function
+Provides the number of records retrieved in all Entrez databases by a single text query.
+
+Required Parameter
+term
+Entrez text query. All special characters must be URL encoded. Spaces may be replaced by '+' signs. For very long queries (more than several hundred characters long), consider using an HTTP POST call. See the PubMed or Entrez help for information about search field descriptions and tags. Search fields and tags are database specific.
+
+https://eutils.ncbi.nlm.nih.gov/entrez/eutils/egquery.fcgi?term=asthma
