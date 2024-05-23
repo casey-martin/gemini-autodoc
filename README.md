@@ -6,6 +6,13 @@ In order to run this code, you will need an API key to access Gemini. Google pro
 ```
 GEMINI_API_KEY=your_super_secret_key_goes_here
 ```
+## Draft Workflow
+raw_text + table_context -> md
+md -> json - questions
+md -> api_examples + verbalized_query
+api_examples -> bio.entrez_examples
+verbalized_query + api_examples -> complex_queries + complex_api_examples
+
 
 ## To Do:
   - Augment first pass of instructions with multihop data from NCBI tutorials.
